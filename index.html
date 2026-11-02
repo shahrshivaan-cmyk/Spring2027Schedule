@@ -178,16 +178,10 @@ main{padding:16px 0 60px}
 .loading{min-height:100vh;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;color:var(--mute);font-size:14px}
 .spin{width:30px;height:30px;border:3px solid #e5e4de;border-top-color:var(--ink);border-radius:50%;animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.ob .pin{width:120px;flex:0 0 120px;text-align:center;letter-spacing:6px;font-family:'DM Mono',monospace}
-.ob .hint{font-size:11.5px;color:var(--mute);margin-top:8px;text-align:left}
-.ob .err{font-size:12.5px;color:var(--danger);margin-top:10px;min-height:16px}
-.ob .back{background:none;border:none;color:var(--mute);font-size:12.5px;margin-top:14px;text-decoration:underline}
-.ob .who{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:14px;font-size:16px;font-weight:600}
 .foot{text-align:center;font-size:11px;color:var(--faint);padding:10px 0 30px}
 </style>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body>
 <div id="app"><div class="loading"><div class="spin"></div><div>Loading Spring 2027…</div></div></div>
@@ -199,8 +193,6 @@ const db=firebase.database();
 const DEFAULT_ROOM="goizueta";
 const roomId=(location.hash.replace("#","").replace(/[^A-Za-z0-9_-]/g,"")||DEFAULT_ROOM);
 const ROOT="spring2027/rooms/"+roomId;
-const auth=firebase.auth();
-let uid=null;
 const LS="sp27_"+roomId;
 
 // ─── Course data (SP27 FTMBA Schedule, 10/28/26) ───
@@ -226,18 +218,14 @@ const BYID=Object.fromEntries(COURSES.map(c=>[c.id,c]));
 const DAYS=["Mon","Tue","Wed","Thu"],SH=8,EH=22;
 
 // ─── State ───
-let me={id:"",name:""},selected=new Set(),users={},members={},legacy={},friends=new Set(),loaded=false,ob={mode:"new",target:null,err:""},busy=false;
+let me={id:"",name:""},selected=new Set(),users={},friends=new Set(),loaded=false;
 let view="list",search="",fSubj="ALL",fWhen="ALL",onlyFriends=false,sortBy="group",expanded=null,personId=null,overlayId="",peopleQ="";
 
 function load(){try{const d=JSON.parse(localStorage.getItem(LS)||"null");if(d){me={id:d.id||"",name:d.name||""};selected=new Set(d.sel||[]);friends=new Set(d.fr||[]);view=d.view||"list"}}catch(e){}}
 function save(){try{localStorage.setItem(LS,JSON.stringify({id:me.id,name:me.name,sel:[...selected],fr:[...friends],view}))}catch(e){}}
 
 let pushT=null;
-function memberDoc(extra){const d={name:me.name,owner:uid,courses:[...selected],updated:Date.now()};const cur=members[me.id];if(cur&&cur.legacyId)d.legacyId=cur.legacyId;return Object.assign(d,extra||{})}
-function push(){if(!me.id||!uid)return;clearTimeout(pushT);pushT=setTimeout(()=>{db.ref(ROOT+"/members/"+me.id).set(memberDoc()).catch(e=>{console.error(e);toast("Couldn't save — you can only edit your own classes");me={id:"",name:""};save();render()})},350)}
-async function pinHash(id,pin){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("sp27:"+roomId+":"+id+":"+pin));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
-function rebuildUsers(){users={};const claimed=new Set(Object.values(members).map(m=>m&&m.legacyId).filter(Boolean));Object.entries(members).forEach(([id,m])=>{if(m&&m.name)users[id]=m});Object.entries(legacy).forEach(([id,u])=>{if(u&&u.name&&!claimed.has(id))users["legacy:"+id]=Object.assign({},u,{legacy:true})})}
-function owns(id){return !!(uid&&members[id]&&members[id].owner===uid)}
+function push(){if(!me.id)return;clearTimeout(pushT);pushT=setTimeout(()=>{db.ref(ROOT+"/users/"+me.id).set({name:me.name,courses:[...selected],updated:Date.now()}).catch(e=>{console.error(e);toast("Couldn't save — check your connection")})},350)}
 
 function compatible(a,b){return !((a==="q1"&&b==="q2")||(a==="q2"&&b==="q1"))}
 function conflictsFor(ids){const sel=[...ids].map(i=>BYID[i]).filter(Boolean),out=[];for(let i=0;i<sel.length;i++)for(let j=i+1;j<sel.length;j++){if(!compatible(sel[i].session,sel[j].session))continue;if(sel[i].slots.some(a=>sel[j].slots.some(b=>a.day===b.day&&a.start<b.end&&b.start<a.end)))out.push([sel[i],sel[j]])}return out}
@@ -247,25 +235,11 @@ function matesMap(){const m={};COURSES.forEach(c=>m[c.id]=[]);others().forEach((
 
 // ─── Actions ───
 function newId(n){return n.toLowerCase().replace(/[^a-z0-9]/g,"_").slice(0,30)+"_"+Math.random().toString(36).slice(2,7)}
-function obErr(m){ob.err=m;busy=false;render()}
-function pinOk(p){return /^\d{4,8}$/.test(p)}
-async function join(){if(busy)return;const v=(document.getElementById("nm").value||"").trim().replace(/\s+/g," ").slice(0,60);const p=(document.getElementById("pin").value||"").trim();
-  if(!v)return obErr("Enter your name.");if(!pinOk(p))return obErr("Pick a PIN of 4–8 digits.");if(!uid)return obErr("Still connecting — try again in a second.");
-  if(Object.values(users).some(u=>u.name.trim().toLowerCase()===v.toLowerCase()))return obErr("That name is already on the list — tap it below to log back in.");
-  busy=true;const id=newId(v);const legacyId=ob.target&&ob.target.startsWith("legacy:")?ob.target.slice(7):null;
-  const courses=legacyId&&legacy[legacyId]?(legacy[legacyId].courses||[]):[...selected];
-  const doc={name:v,owner:uid,courses,updated:Date.now()};if(legacyId)doc.legacyId=legacyId;
-  try{await db.ref(ROOT).update({["members/"+id]:doc,["secrets/"+id]:await pinHash(id,p)});members[id]=doc;me={id,name:v};selected=new Set(courses);busy=false;ob={mode:"new",target:null,err:""};save();rebuildUsers();render();toast("You're in — your classes are locked to your PIN 🔒")}
-  catch(e){console.error(e);obErr("Couldn't save — try again.")}}
-async function login(){if(busy)return;const id=ob.target,m=members[id];const p=(document.getElementById("pin").value||"").trim();if(!m)return;if(!pinOk(p))return obErr("Enter your 4–8 digit PIN.");if(!uid)return obErr("Still connecting — try again in a second.");
-  busy=true;try{const h=await pinHash(id,p);await db.ref(ROOT+"/claims/"+id+"/"+uid).set(h);const doc=Object.assign({},m,{owner:uid,updated:Date.now()});await db.ref(ROOT+"/members/"+id).set(doc);members[id]=doc;me={id,name:m.name};selected=new Set(m.courses||[]);busy=false;ob={mode:"new",target:null,err:""};save();render();toast("Welcome back, "+m.name.split(" ")[0])}
-  catch(e){console.error(e);obErr("Wrong PIN for "+m.name+".")}}
-function pick(id){const u=users[id];if(!u)return;if(u.legacy){ob={mode:"legacy",target:id,err:""};render();setTimeout(()=>{const n=document.getElementById("nm");if(n)n.value=u.name;const q=document.getElementById("pin");q&&q.focus()},0);return}
-  if(owns(id)){me={id,name:u.name};selected=new Set(u.courses||[]);save();render();return}
-  ob={mode:"login",target:id,err:""};render()}
-function obBack(){ob={mode:"new",target:null,err:""};render()}
-function signOut(){me={id:"",name:""};selected=new Set();ob={mode:"new",target:null,err:""};save();render()}
-function toggle(id){if(!owns(me.id)){toast("Log in with your PIN to edit");signOut();return}selected.has(id)?selected.delete(id):selected.add(id);save();push();render()}
+function join(){const v=document.getElementById("nm").value.trim().slice(0,60);if(!v)return;me={id:newId(v),name:v};save();push();render();toast("You're in — pick your courses 🎉")}
+function claim(id){const u=users[id];if(!u)return;me={id,name:u.name};selected=new Set(u.courses||[]);save();render();toast("Welcome back, "+u.name.split(" ")[0])}
+function signOut(){if(!confirmLeave())return;me={id:"",name:""};selected=new Set();save();render()}
+function confirmLeave(){return true}
+function toggle(id){selected.has(id)?selected.delete(id):selected.add(id);save();push();render()}
 function star(id,ev){ev&&ev.stopPropagation();friends.has(id)?friends.delete(id):friends.add(id);save();render()}
 function go(v){view=v;save();render();window.scrollTo({top:0})}
 function openPerson(id){personId=id;view="people";save();render();window.scrollTo({top:0})}
@@ -282,9 +256,7 @@ function rerenderKeep(id){const el=document.getElementById(id);const pos=el?el.s
 function render(){
   const app=document.getElementById("app");
   if(!loaded){return}
-  if(me.id&&!owns(me.id)){const m=members[me.id];if(m){ob={mode:"login",target:me.id,err:ob.err||"This device isn't linked to "+m.name+" anymore — enter your PIN."}}me={id:"",name:""};save()}
-  if(me.id&&members[me.id])me.name=members[me.id].name;
-  if(!me.id){app.innerHTML=renderOnboard();setTimeout(()=>{const i=document.getElementById(ob.mode==="login"?"pin":"nm");i&&i.focus()},0);return}
+  if(!me.id){app.innerHTML=renderOnboard();setTimeout(()=>{const i=document.getElementById("nm");i&&i.focus()},0);return}
   const conf=conflictsFor(selected),confIds=new Set(conf.flat().map(c=>c.id));
   const sel=COURSES.filter(c=>selected.has(c.id));
   const mm=matesMap();
@@ -293,7 +265,7 @@ function render(){
   const overlapPeople=others().filter(([id,u])=>(u.courses||[]).some(x=>selected.has(x))).length;
   let h=`<div class="hdr"><div class="wrap">
     <div class="logo">Spring 2027<small>Goizueta FTMBA</small></div>
-    <div class="me"><div class="live"><i></i>${total} in</div>${av(me.name,30)}<span class="me-name">${esc(me.name)}</span><button class="ghost" onclick="signOut()">Log out</button></div>
+    <div class="me"><div class="live"><i></i>${total} in</div>${av(me.name,30)}<span class="me-name">${esc(me.name)}</span><button class="ghost" onclick="signOut()">Switch</button></div>
   </div></div>
   <div class="bar"><div class="wrap">
     <div class="stat"><b>${selected.size}</b><span>courses</span></div>
@@ -315,22 +287,14 @@ function render(){
 }
 
 function renderOnboard(){
-  const list=Object.entries(users).sort((a,b)=>a[1].name.localeCompare(b[1].name));
-  const err=`<div class="err">${esc(ob.err)}</div>`;
-  if(ob.mode==="login"){const m=members[ob.target];
-    return`<div class="ob"><div class="ob-box"><div class="who">${av(m?m.name:"?",34)}${esc(m?m.name:"")}</div>
-    <p>Enter your PIN to edit your classes on this device.</p>
-    <div class="row" style="justify-content:center"><input id="pin" class="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" onkeydown="if(event.key==='Enter')login()"><button class="go" onclick="login()">Log in</button></div>${err}
-    <button class="back" onclick="obBack()">Not you? Go back</button></div></div>`}
-  const legacyMode=ob.mode==="legacy";
+  const list=Object.entries(users).filter(([,u])=>u&&u.name).sort((a,b)=>a[1].name.localeCompare(b[1].name));
   return`<div class="ob"><div class="ob-box">
     <div class="em">🌱</div>
     <h1>Spring 2027 Schedule</h1>
-    <p>${legacyMode?"Set a PIN to lock in the classes you already added. Only you will be able to change them.":"Goizueta Business School<br>Add your classes, see your week, and see what your friends are taking — live."}</p>
-    <div class="row"><input id="nm" placeholder="Your full name" maxlength="60" ${legacyMode?"readonly":""} onkeydown="if(event.key==='Enter')document.getElementById('pin').focus()"><input id="pin" class="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" onkeydown="if(event.key==='Enter')join()"><button class="go" onclick="join()">${legacyMode?"Lock":"Join"}</button></div>
-    <div class="hint">🔒 Pick a 4–8 digit PIN. Only you can change your classes, and you'll use the PIN on any other phone or laptop.</div>${err}
-    ${legacyMode?`<button class="back" onclick="obBack()">Go back</button>`:`<div class="info">${list.length?`🟢 ${list.length} ${list.length===1?"classmate has":"classmates have"} joined`:"You're the first one here — share the link after you join!"}</div>
-    ${list.length?`<div class="claim"><div class="lbl">Already joined? Tap your name</div><div class="namechips">${list.map(([id,u])=>`<span class="nchip" onclick="pick('${id}')">${av(u.name,22)}${esc(u.name)}${u.legacy?" · set PIN":""}</span>`).join("")}</div></div>`:""}`}
+    <p>Goizueta Business School<br>Add your classes, see your week, and see what your friends are taking — live.</p>
+    <div class="row"><input id="nm" placeholder="Your full name" maxlength="60" onkeydown="if(event.key==='Enter')join()"><button class="go" onclick="join()">Join</button></div>
+    <div class="info">${list.length?`🟢 ${list.length} ${list.length===1?"classmate has":"classmates have"} joined`:"You're the first one here — share the link after you join!"}</div>
+    ${list.length?`<div class="claim"><div class="lbl">Already joined on another device? Tap your name</div><div class="namechips">${list.map(([id,u])=>`<span class="nchip" onclick="claim('${id}')">${av(u.name,22)}${esc(u.name)}</span>`).join("")}</div></div>`:""}
   </div></div>`;
 }
 
@@ -463,15 +427,17 @@ function renderPeople(mm){
 
 // ─── Init ───
 load();
-let gotM=false,gotL=false;
-function onData(){if(!gotM||!gotL)return;rebuildUsers();loaded=true;const a=document.activeElement;const id=a&&a.id;const val=a&&a.value;render();if(id){const n=document.getElementById(id);if(n&&n.tagName==="INPUT"){if(val!=null&&n.value!==val)n.value=val;n.focus();try{n.setSelectionRange(n.value.length,n.value.length)}catch(e){}}}}
-function fail(e){console.error(e);document.getElementById("app").innerHTML=`<div class="loading">⚠️ Couldn't connect. Try refreshing.</div>`}
-auth.onAuthStateChanged(u=>{
-  if(!u){auth.signInAnonymously().catch(fail);return}
-  if(uid)return;uid=u.uid;
-  db.ref(ROOT+"/members").on("value",s=>{members=s.val()||{};gotM=true;onData()},fail);
-  db.ref(ROOT+"/users").on("value",s=>{legacy=s.val()||{};gotL=true;onData()},fail);
-});
+db.ref(ROOT+"/users").on("value",snap=>{
+  users=snap.val()||{};
+  if(me.id&&users[me.id]&&!loaded){ // trust server copy on first load if local is empty
+    if(!selected.size&&users[me.id].courses)selected=new Set(users[me.id].courses);
+  }
+  if(me.id&&!users[me.id]&&loaded===false)push(); // re-register if missing
+  loaded=true;
+  const a=document.activeElement;const id=a&&a.id;
+  render();
+  if(id){const n=document.getElementById(id);if(n&&n.tagName==="INPUT"){n.focus();try{n.setSelectionRange(n.value.length,n.value.length)}catch(e){}}}
+},err=>{console.error(err);document.getElementById("app").innerHTML=`<div class="loading">⚠️ Couldn't connect to the database. Try refreshing.</div>`});
 </script>
 </body>
 </html>
