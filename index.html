@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spring 2027 Schedule — Goizueta</title>
+<meta name="description" content="Pick your Spring 2027 Goizueta courses and see what your classmates are taking.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F5F4EF;--card:#fff;--ink:#17181A;--mute:#7A7A75;--faint:#B5B5AE;--line:#E6E5DF;--soft:#F0EFE9;--accent:#1F6F4A;--accent-soft:#E3F1E9;--danger:#DC2626;--danger-soft:#FEF2F2;--star:#E8A317}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px}
+@media(max-width:600px){.wrap{padding:0 14px}}
+
+/* header */
+.hdr{background:var(--ink);color:#fff;padding:16px 0}
+.hdr .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{font-size:19px;font-weight:700;letter-spacing:-.4px}
+.logo small{font-size:11px;font-weight:600;background:#2b2c2f;color:#9a9a95;padding:3px 9px;border-radius:12px;margin-left:8px;letter-spacing:0;vertical-align:2px}
+.me{display:flex;align-items:center;gap:8px}
+.live{display:flex;align-items:center;gap:6px;background:#26272a;padding:4px 10px;border-radius:14px;font-size:11px;color:#aaa}
+.live i{width:6px;height:6px;border-radius:50%;background:#34D399;animation:blink 2s infinite}
+@keyframes blink{50%{opacity:.35}}
+.av{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0}
+.me-name{font-size:13px;font-weight:600}
+.ghost{background:none;border:1px solid #3a3b3e;color:#bbb;font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px}
+.ghost:hover{color:#fff;border-color:#666}
+
+/* stats + tabs */
+.bar{background:var(--card);border-bottom:1px solid var(--line);padding:10px 0;position:sticky;top:0;z-index:20}
+.bar .wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.stat b{font-size:21px;font-weight:700}.stat span{font-size:11px;color:var(--mute);margin-left:4px}
+.tabs{margin-left:auto;display:flex;background:var(--soft);border-radius:9px;padding:3px}
+.tab{border:none;background:none;padding:7px 14px;font-size:12.5px;font-weight:600;color:var(--mute);border-radius:7px}
+.tab.on{background:var(--ink);color:#fff}
+.tab:not(.on):hover{background:#e6e5df}
+@media(max-width:600px){.bar .wrap{gap:14px}.tabs{margin-left:0;width:100%}.tab{flex:1;padding:8px 6px}}
+
+main{padding:16px 0 60px}
+.alert{background:var(--danger-soft);border:1px solid #FECACA;border-radius:10px;padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:#991B1B}
+.alert .sp{flex:1;min-width:160px}
+.btn-red{background:var(--danger);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:16px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+.filters{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.filters input,.filters select{padding:9px 12px;border-radius:8px;border:1px solid #dcdbd4;font-size:12.5px;background:#fff;outline:none;color:var(--ink)}
+.filters input{flex:1;min-width:160px}
+.filters input:focus,.filters select:focus{border-color:var(--ink)}
+.sortbar{display:flex;gap:3px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.sortbar .lbl{font-size:11px;color:var(--faint);margin-right:2px}
+.pill{border:none;background:none;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:6px;color:var(--mute)}
+.pill.on{background:var(--ink);color:#fff}
+.pill:not(.on):hover{background:#eae9e3}
+.pill.fr.on{background:var(--star);color:#fff}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.sec-h{padding:9px 14px;font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--mute);background:#FAFAF7;border-bottom:1px solid var(--line)}
+.cr{padding:11px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;border-left:3px solid transparent;transition:background .12s}
+.cr:not(:last-child){border-bottom:1px solid #f1f0ea}
+.cr:hover{background:#FAFAF7}
+.cr.sel{border-left-color:var(--bc);background:var(--bbg)}
+.cbox{width:19px;height:19px;border-radius:5px;border:2px solid #cfcec7;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:11px;font-weight:700}
+.cr.sel .cbox{border-color:var(--bc);background:var(--bc)}
+.chip{display:inline-flex;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.ttl{font-size:13px;font-weight:600}
+.meta{font-size:11.5px;color:var(--mute);margin-top:3px;line-height:1.45}
+.meta .d{color:#d6d5ce;margin:0 4px}
+.tag{font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:8px;white-space:nowrap}
+.tag.conf{background:#FEE2E2;color:var(--danger)}
+.tag.ses{background:#EEF2FF;color:#4338CA}
+.tag.note{background:#FFF7E6;color:#A16207}
+.mates{display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;background:rgba(0,0,0,.035);white-space:nowrap;flex-shrink:0}
+.mates:hover{background:rgba(0,0,0,.07)}
+.mates.has-fr{background:#FDF3DC}
+.mini{width:21px;height:21px;font-size:8.5px;margin-left:-7px;border:2px solid #fff}
+.mini:first-child{margin-left:0}
+.mates .n{font-size:11px;color:var(--mute);font-weight:700;margin-left:2px}
+.exp{padding:8px 14px 12px 47px;background:#FAFAF7;border-bottom:1px solid #f1f0ea}
+.exp .lbl{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.namechips{display:flex;flex-wrap:wrap;gap:6px}
+.nchip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:3px 10px 3px 3px;font-size:12px;font-weight:500;cursor:pointer}
+.nchip:hover{border-color:#bbb}
+.nchip.fr{border-color:#F3D27A;background:#FFFBEF}
+
+.side{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;position:sticky;top:70px}
+.side h3{font-size:13.5px;font-weight:700;margin-bottom:10px}
+.empty{font-size:12px;color:var(--faint);text-align:center;padding:18px 8px;line-height:1.5}
+.sc{padding:8px 10px;margin-bottom:5px;border-radius:8px;display:flex;align-items:center;gap:8px}
+.sc .code{font-size:11.5px;font-weight:700}
+.sc .t{font-size:11px;color:#555;margin-top:1px}
+.x{background:none;border:none;font-size:16px;color:#999;line-height:1;padding:0 2px}
+.x:hover{color:var(--ink)}
+.cta{width:100%;margin-top:10px;padding:10px;background:var(--ink);color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:600}
+.cta:hover{background:#333}
+.cta.alt{background:#fff;color:var(--ink);border:1px solid var(--line)}
+
+/* calendar */
+.cal-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:12.5px}
+.cal-tools select{padding:8px 10px;border-radius:8px;border:1px solid #dcdbd4;font-size:12.5px;background:#fff}
+.cal{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.cg{display:grid;grid-template-columns:48px repeat(4,minmax(130px,1fr));min-width:600px}
+.dh{height:38px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#555;letter-spacing:.6px}
+.dc{border-left:1px solid #f1f0ea}
+.body{position:relative}
+.hl{position:absolute;left:0;right:0;border-top:1px solid #f3f2ed}
+.tl{position:absolute;right:6px;font-size:9.5px;color:var(--faint);font-family:'DM Mono',monospace;transform:translateY(-50%)}
+.blk{position:absolute;border-radius:6px;color:#fff;padding:5px 6px;font-size:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.blk.conf{outline:2px solid var(--danger);outline-offset:1px}
+.blk.ghost{background:repeating-linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.9) 5px,rgba(255,255,255,.75) 5px,rgba(255,255,255,.75) 10px)!important;color:var(--ink);border:2px dashed var(--gc);box-shadow:none}
+.blk .c{font-weight:700;font-size:11px;line-height:1.15}
+.blk .tt{opacity:.92;font-size:9.5px;margin-top:1px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.blk .s{opacity:.75;font-size:9px;margin-top:1px}
+.legend{display:flex;gap:14px;padding:9px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--mute)}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.offgrid{margin-top:12px}
+
+/* people */
+.share{background:linear-gradient(135deg,#17181A,#26342D);color:#fff;border-radius:12px;padding:18px 20px;margin-bottom:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.share .txt{flex:1;min-width:220px}
+.share h3{font-size:15px;font-weight:700;margin-bottom:3px}
+.share p{font-size:12px;color:#a9b3ad}
+.share .url{font-family:'DM Mono',monospace;font-size:11.5px;color:#d7e2dc;margin-top:8px;word-break:break-all}
+.share .acts{display:flex;gap:8px;flex-wrap:wrap}
+.b-w{background:#fff;color:var(--ink);border:none;border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600}
+.b-wa{background:#25D366;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600}
+.two{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.panel h3{font-size:14px;font-weight:700}
+.panel .sub{font-size:11.5px;color:var(--mute);margin:2px 0 12px}
+.panel input{width:100%;padding:9px 12px;border-radius:8px;border:1px solid #dcdbd4;font-size:12.5px;margin-bottom:8px;outline:none}
+.pr{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:8px;cursor:pointer}
+.pr:hover{background:#FAFAF7}
+.pr.on{background:var(--accent-soft)}
+.pr .nm{font-size:13px;font-weight:600}
+.pr .mt{font-size:11px;color:var(--mute);margin-top:1px}
+.star{background:none;border:none;font-size:17px;line-height:1;color:#d4d3cc;padding:2px}
+.star.on{color:var(--star)}
+.shared{text-align:right;min-width:42px}
+.shared b{font-size:17px;color:var(--accent)}
+.shared div{font-size:9.5px;color:var(--mute)}
+.pop{display:flex;align-items:center;gap:10px;padding:9px 0}
+.pop:not(:last-child){border-bottom:1px solid #f3f2ed}
+.rank{width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex-shrink:0}
+.add{padding:5px 11px;border-radius:7px;border:1px solid #dcdbd4;background:#fff;color:#555;font-size:11.5px;font-weight:600;white-space:nowrap}
+.add.on{border-color:transparent;color:#fff}
+.prof-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.prof-h .nm{font-size:16px;font-weight:700}
+.prof-h .mt{font-size:12px;color:var(--mute)}
+.pc{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f2ed}
+.pc:last-child{border-bottom:none}
+
+/* onboarding */
+.ob{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.ob-box{width:100%;max-width:420px;text-align:center;animation:up .45s ease}
+@keyframes up{from{opacity:0;transform:translateY(16px)}}
+.ob .em{font-size:46px;margin-bottom:12px}
+.ob h1{font-size:26px;font-weight:700;letter-spacing:-.6px;margin-bottom:6px}
+.ob p{font-size:13.5px;color:var(--mute);line-height:1.55;margin-bottom:22px}
+.ob .row{display:flex;gap:8px}
+.ob input{flex:1;min-width:0;padding:13px 16px;border-radius:11px;border:1px solid #d6d5ce;font-size:15px;outline:none;background:#fff}
+.ob input:focus{border-color:var(--ink)}
+.ob .go{padding:13px 24px;border-radius:11px;border:none;background:var(--ink);color:#fff;font-size:15px;font-weight:600}
+.ob .info{margin-top:18px;font-size:12px;color:var(--mute)}
+.ob .claim{margin-top:22px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.ob .claim .lbl{font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.ob .claim .namechips{max-height:170px;overflow:auto}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:99;animation:up .25s ease}
+.loading{min-height:100vh;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;color:var(--mute);font-size:14px}
+.spin{width:30px;height:30px;border:3px solid #e5e4de;border-top-color:var(--ink);border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.foot{text-align:center;font-size:11px;color:var(--faint);padding:10px 0 30px}
+</style>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+<div id="app"><div class="loading"><div class="spin"></div><div>Loading Spring 2027…</div></div></div>
+<script>
+// ─── Firebase (shared with the Fall app; Spring data lives under /spring2027) ───
+const firebaseConfig={apiKey:"AIzaSyA0bgfK4xA-SF9fxkqgopukZD_TOPEmSVw",authDomain:"fall-2026-schedule.firebaseapp.com",databaseURL:"https://fall-2026-schedule-default-rtdb.firebaseio.com",projectId:"fall-2026-schedule",storageBucket:"fall-2026-schedule.firebasestorage.app",messagingSenderId:"184833453376",appId:"1:184833453376:web:432bfeaca1b7fbff545ea5"};
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+const DEFAULT_ROOM="goizueta";
+const roomId=(location.hash.replace("#","").replace(/[^A-Za-z0-9_-]/g,"")||DEFAULT_ROOM);
+const ROOT="spring2027/rooms/"+roomId;
+const LS="sp27_"+roomId;
+
+// ─── Course data (SP27 FTMBA Schedule, 10/28/26) ───
+const COURSES=[{"id":"4677","subj":"BUS","cat":"511","sect":"3201","title":"Effective Comm.& Storytelling","loc":"GBS_304","pattern":"TTh 1pm-2:15pm","prof":"Steven Savage","session":"q1","group":"CORE","note":""},{"id":"BUS593-3201","subj":"BUS","cat":"593","sect":"3201","title":"Tech Trends and Transformation","loc":"GBS_304","pattern":"TTh 1pm-2:15pm","prof":"Tucker Balch","session":"q2","group":"CORE","note":""},{"id":"4678","subj":"BUS","cat":"511","sect":"3202","title":"Effective Comm.& Storytelling","loc":"GBS_304","pattern":"TTh 2:30pm-3:45pm","prof":"Steven Savage","session":"q1","group":"CORE","note":""},{"id":"BUS593-3202","subj":"BUS","cat":"593","sect":"3202","title":"Tech Trends and Transformation","loc":"GBS_304","pattern":"TTh 2:30pm-3:45pm","prof":"Tucker Balch","session":"q2","group":"CORE","note":""},{"id":"4595","subj":"OAM","cat":"561","sect":"3201","title":"Principled Leadership","loc":"GBS_304","pattern":"TTh 10am-11:15am","prof":"Ira Bedzow","session":"full","group":"CORE","note":""},{"id":"impact","subj":"BUS","cat":"IMPACT","sect":"","title":"IMPACT Elective","loc":"Various","pattern":"MW 10am-11:15am","prof":"Various","session":"full","group":"CORE","note":"Separate registration via Prof. Segall / IMPACT Leadership Board"},{"id":"4455","subj":"ACT","cat":"513","sect":"3201","title":"Managerial Accounting","loc":"GFC_W100","pattern":"TTh 10am-11:15am","prof":"Mackenzie Feinberg","session":"full","group":"ELECTIVE","note":""},{"id":"4456","subj":"ACT","cat":"513","sect":"3202","title":"Managerial Accounting","loc":"GFC_W100","pattern":"TTh 11:30am-12:45pm","prof":"Mackenzie Feinberg","session":"full","group":"ELECTIVE","note":""},{"id":"4593","subj":"ACT","cat":"514","sect":"3223","title":"Fin.Stmt.Analysis/Valuation","loc":"GFC_W100","pattern":"Th 6:30pm-9:30pm","prof":"Ilia Dichev","session":"full","group":"ELECTIVE","note":""},{"id":"4594","subj":"ACT","cat":"514","sect":"3224","title":"Fin.Stmt.Analysis/Valuation","loc":"GBS_130","pattern":"MW 11:30am-12:45pm","prof":"Ilia Dichev","session":"full","group":"ELECTIVE","note":""},{"id":"4573","subj":"ACT","cat":"516","sect":"3220","title":"Acct. for Social Impact Orgs.","loc":"GBS_331","pattern":"TTh 10am-11:15am","prof":"Jan Barton","session":"full","group":"ELECTIVE","note":""},{"id":"4629","subj":"ACT","cat":"530","sect":"3221","title":"Personal Financial Planning","loc":"GBS_231","pattern":"TTh 10am-11:15am","prof":"Usha Rackliffe","session":"full","group":"ELECTIVE","note":""},{"id":"4883","subj":"ACT","cat":"530","sect":"3238","title":"Personal Financial Planning","loc":"GBS_231","pattern":"TTh 11:30am-12:45pm","prof":"Usha Rackliffe","session":"full","group":"ELECTIVE","note":""},{"id":"4549","subj":"ACT","cat":"616","sect":"3225","title":"Smart Tax: Ideas from Tax Pros","loc":"GBS_304","pattern":"MW 11:30am-12:45pm","prof":"Usha Rackliffe","session":"full","group":"ELECTIVE","note":""},{"id":"4485","subj":"ACT","cat":"618","sect":"3218","title":"Auditing","loc":"GBS_201","pattern":"MW 4pm-5:15pm","prof":"Cassandra Estep","session":"full","group":"ELECTIVE","note":""},{"id":"4536","subj":"ACT","cat":"625","sect":"3222","title":"Fin.Reporting of Debt & Equity","loc":"GBS_304","pattern":"MW 1pm-2:15pm","prof":"Usha Rackliffe","session":"full","group":"ELECTIVE","note":""},{"id":"4682","subj":"ACT","cat":"677","sect":"3226","title":"Machine Learn.Fundam. Analysis","loc":"GBS_334","pattern":"MW 2:30pm-3:45pm","prof":"Matthew Lyle","session":"full","group":"ELECTIVE","note":""},{"id":"4450","subj":"FIN","cat":"503","sect":"3201","title":"Global Macroeconomic Persp","loc":"GBS_208","pattern":"TTh 2:30pm-3:45pm","prof":"Jeffrey Rosensweig","session":"full","group":"ELECTIVE","note":""},{"id":"4460","subj":"FIN","cat":"526","sect":"3231","title":"Financial Intelligence","loc":"GBS_130","pattern":"MW 1pm-2:15pm","prof":"Shehzad Mian","session":"full","group":"ELECTIVE","note":""},{"id":"4462","subj":"FIN","cat":"527","sect":"3201","title":"Financial Markets","loc":"GFC_W330","pattern":"TTh 4pm-5:15pm","prof":"Nicholas Valerio III","session":"full","group":"ELECTIVE","note":""},{"id":"4565","subj":"FIN","cat":"582","sect":"3244","title":"Real Estate Law","loc":"GBS_234","pattern":"TTh 2:30pm-3:45pm","prof":"Ohad Gil","session":"full","group":"ELECTIVE","note":""},{"id":"4487","subj":"FIN","cat":"620","sect":"3232","title":"Advanced Corporate Finance","loc":"GBS_201","pattern":"TTh 2:30pm-3:45pm","prof":"Gonzalo Maturana Falcone","session":"full","group":"ELECTIVE","note":""},{"id":"4554","subj":"FIN","cat":"622","sect":"3233","title":"Doing Deals-Private Equity","loc":"GFC_W330","pattern":"W 6:30pm-9:30pm","prof":"Kevin Crowley","session":"full","group":"ELECTIVE","note":""},{"id":"4489","subj":"FIN","cat":"623","sect":"3234","title":"Security Analy&Portfolio Mgmt","loc":"GBS_301","pattern":"MW 8:30am-9:45am","prof":"Lakshmi Ramachandran","session":"full","group":"ELECTIVE","note":""},{"id":"4491","subj":"FIN","cat":"624","sect":"3201","title":"Derivatives","loc":"GBS_331","pattern":"MW 1pm-2:15pm","prof":"Nicholas Valerio III","session":"full","group":"ELECTIVE","note":""},{"id":"4492","subj":"FIN","cat":"625","sect":"3245","title":"Real Estate Finance","loc":"GFC_W100","pattern":"MW 8:30am-9:45am","prof":"Sergio Garate Alvarez","session":"full","group":"ELECTIVE","note":""},{"id":"4494","subj":"FIN","cat":"628","sect":"3201","title":"Investment Banking","loc":"GFC_W300","pattern":"TTh 11:30am-12:45pm","prof":"Kevin Crowley","session":"full","group":"ELECTIVE","note":""},{"id":"4626","subj":"FIN","cat":"630","sect":"3235","title":"Foundations of FinTech","loc":"GBS_201","pattern":"TTh 11:30am-12:45pm","prof":"Tetyana Balyuk","session":"full","group":"ELECTIVE","note":""},{"id":"4538","subj":"FIN","cat":"681","sect":"3236","title":"Venture Capital&Private Equity","loc":"GBS_301","pattern":"MW 2:30pm-3:45pm","prof":"Klaas Baks","session":"full","group":"ELECTIVE","note":""},{"id":"4533","subj":"FIN","cat":"683","sect":"3237","title":"Applied Investment Management","loc":"GFC_W320","pattern":"TTh 10am-11:15am","prof":"Jeffrey Busse","session":"full","group":"ELECTIVE","note":""},{"id":"4522","subj":"FIN","cat":"684","sect":"3246","title":"Advanced Derivatives Assets","loc":"GBS_331","pattern":"MW 4pm-5:15pm","prof":"Nicholas Valerio III","session":"full","group":"ELECTIVE","note":""},{"id":"4530","subj":"FIN","cat":"686","sect":"3247","title":"Real Estate Equity Investment","loc":"GFC_W100","pattern":"MW 10am-11:15am","prof":"Sergio Garate Alvarez","session":"full","group":"ELECTIVE","note":""},{"id":"4543","subj":"FIN","cat":"689","sect":"3248","title":"Adv Real Estate Finance","loc":"GFC_W330","pattern":"Tu 6:30pm-9:30pm","prof":"Sergio Garate Alvarez","session":"full","group":"ELECTIVE","note":""},{"id":"4550","subj":"FIN","cat":"695","sect":"3249","title":"Distressed Investing","loc":"GBS_301","pattern":"W 4pm-6:30pm","prof":"Klaas Baks","session":"full","group":"ELECTIVE","note":""},{"id":"4478","subj":"ISOM","cat":"554","sect":"3262","title":"Data Science for Business","loc":"GBS_331","pattern":"TTh 11:30am-12:45pm","prof":"Jingfei Zhang","session":"full","group":"ELECTIVE","note":""},{"id":"4514","subj":"ISOM","cat":"655","sect":"3261","title":"Superforecasting","loc":"GFC_W300","pattern":"Th 6:30pm-9:30pm","prof":"Donald Lee","session":"full","group":"ELECTIVE","note":""},{"id":"4471","subj":"MKT","cat":"542","sect":"3271","title":"Marketing Analytics","loc":"GFC_W131","pattern":"W 6:30pm-9:30pm","prof":"Marat Ibragimov","session":"full","group":"ELECTIVE","note":""},{"id":"4520","subj":"MKT","cat":"548","sect":"3272","title":"Sales and Sales Management","loc":"GBS_TBA","pattern":"M 6:30pm-9:30pm","prof":"TBD","session":"full","group":"ELECTIVE","note":""},{"id":"4503","subj":"MKT","cat":"643","sect":"3273","title":"Pricing Strategy and Analytics","loc":"GBS_204","pattern":"MW 1pm-2:15pm","prof":"Saloni Firasta-Vastani","session":"full","group":"ELECTIVE","note":""},{"id":"4509","subj":"MKT","cat":"647","sect":"3274","title":"Sports Marketing","loc":"GFC_W131","pattern":"TTh 2:30pm-3:45pm","prof":"Michael Lewis","session":"full","group":"ELECTIVE","note":""},{"id":"4615","subj":"MKT","cat":"599R","sect":"3276","title":"Special Topics - Good Growth","loc":"GBS_334","pattern":"MW 2:30pm-3:45pm","prof":"Omar Rodriguez-Vila","session":"full","group":"ELECTIVE","note":"FTMBA27 only."},{"id":"OAM515-3201","subj":"OAM","cat":"515","sect":"3201","title":"Coaching a Prob.-Solving Team","loc":"GBS_421","pattern":"MW 11:30am-12:45pm","prof":"Lynne Segall","session":"full","group":"ELECTIVE","note":"FTMBA27 only. IMPACT Coaching Fellows Application required"},{"id":"4570","subj":"OAM","cat":"538","sect":"3289","title":"Strategies for Ent./Media","loc":"GFC_W320","pattern":"TTh 2:30pm-3:45pm","prof":"Abraham Oshotse","session":"full","group":"ELECTIVE","note":""},{"id":"4659","subj":"OAM","cat":"619","sect":"3201","title":"Bias in the Workplace","loc":"GBS_234","pattern":"MW 1pm-2:15pm","prof":"Ella Washington","session":"full","group":"ELECTIVE","note":""},{"id":"4496","subj":"OAM","cat":"632","sect":"3201","title":"Negotiations","loc":"GBS_331","pattern":"MW 11:30am-12:45pm","prof":"Michael Sacks","session":"full","group":"ELECTIVE","note":""},{"id":"4497","subj":"OAM","cat":"632","sect":"3202","title":"Negotiations","loc":"GBS_234","pattern":"MW 2:30pm-3:45pm","prof":"Michael Sacks","session":"full","group":"ELECTIVE","note":""},{"id":"4498","subj":"OAM","cat":"632","sect":"3284","title":"Negotiations","loc":"GFC_W330","pattern":"M 6:30pm-9:30pm","prof":"Michael Sacks","session":"full","group":"ELECTIVE","note":""},{"id":"4501","subj":"OAM","cat":"636","sect":"3285","title":"Entrepreneurship","loc":"GFC_W100","pattern":"Tu 6:30pm-9:30pm","prof":"Charles Goetz","session":"full","group":"ELECTIVE","note":""},{"id":"4502","subj":"OAM","cat":"637","sect":"3201","title":"Innovation Strategy","loc":"GBS_204","pattern":"TTh 10am-11:15am","prof":"Renee Dye","session":"full","group":"ELECTIVE","note":""},{"id":"4546","subj":"OAM","cat":"661","sect":"3292","title":"Applied Entrepreneurship","loc":"GBS_208","pattern":"TTh 1pm-2:15pm","prof":"Charles Goetz","session":"full","group":"ELECTIVE","note":""},{"id":"4547","subj":"OAM","cat":"672","sect":"3201","title":"Corporate Strategy","loc":"GFC_W300","pattern":"TTh 1pm-2:15pm","prof":"Renee Dye","session":"full","group":"ELECTIVE","note":""},{"id":"4589","subj":"OAM","cat":"680","sect":"3288","title":"Human Resources Analytics","loc":"GBS_334","pattern":"W 4pm-6:30pm","prof":"Anand Swaminathan","session":"full","group":"ELECTIVE","note":""},{"id":"BUS692-3201","subj":"BUS","cat":"692","sect":"3201","title":"Goizueta Adv. Leader Academy","loc":"GBS_234","pattern":"Tu 4pm-5:15pm","prof":"James Kurish","session":"full","group":"ELECTIVE","note":"FTMBA27 only. Application required"},{"id":"4477","subj":"ISOM","cat":"553","sect":"3295","title":"Supply Chain Management","loc":"ONLINE","pattern":"Jan 4–10 (times TBD)","prof":"Nikolay Osadchiy","session":"ace","group":"ACE","note":""},{"id":"4693","subj":"ISOM","cat":"560","sect":"3295","title":"Applied Machine Learning","loc":"ONLINE","pattern":"Jan 4–10 (times TBD)","prof":"Panagiotis Adamopoulos","session":"ace","group":"ACE","note":""},{"id":"4508","subj":"MKT","cat":"646","sect":"3295","title":"Consumer Behavior","loc":"ONLINE","pattern":"Jan 4–10 (times TBD)","prof":"Maximilian Gaerth","session":"ace","group":"ACE","note":""},{"id":"4613","subj":"FIN","cat":"599R","sect":"3201","title":"Special Topics - Real Estate Appraisal","loc":"ONLINE","pattern":"Jan 4–6, 10am–3pm","prof":"Sergio Garate Alvarez","session":"ace","group":"ACE","note":"Just added · 1 credit"},{"id":"4722","subj":"BUS","cat":"536","sect":"3201","title":"Washington Campus","loc":"Washington, DC","pattern":"January 4-8, 2027","prof":"TBD","session":"dc","group":"DC","note":""},{"id":"4723","subj":"BUS","cat":"536","sect":"3202","title":"Washington Campus - Healthcare","loc":"Washington, DC","pattern":"January 4-8, 2027","prof":"TBD","session":"dc","group":"DC","note":""},{"id":"4724","subj":"BUS","cat":"536","sect":"3203","title":"Washington Campus","loc":"Washington, DC","pattern":"March 8-12, 2027","prof":"TBD","session":"dc","group":"DC","note":""},{"id":"4725","subj":"BUS","cat":"536","sect":"3203","title":"Washington Campus - Healthcare","loc":"Washington, DC","pattern":"March 8-12, 2027","prof":"TBD","session":"dc","group":"DC","note":""}];
+
+const SESS={full:"",q1:"Jan–Mar",q2:"Mar–May",ace:"January ACE",dc:"Washington Campus"};
+const GROUP_LABEL={CORE:"Core · Class of 2028",ELECTIVE:"Electives",ACE:"January ACE (Jan 4–10, online)",DC:"Washington Campus"};
+const COL={ACT:{bg:"#E8F0FE",b:"#4285F4",t:"#1A56DB"},FIN:{bg:"#FEF3E2",b:"#F59E0B",t:"#B45309"},ISOM:{bg:"#E3F7EC",b:"#10B981",t:"#047857"},MKT:{bg:"#FDE8F0",b:"#EC4899",t:"#BE185D"},OAM:{bg:"#F0E8FE",b:"#8B5CF6",t:"#6D28D9"},BUS:{bg:"#E6F4F6",b:"#0E9AA7",t:"#0B6B74"}};
+const col=c=>COL[c.subj]||COL.BUS;
+const AVC=["#4285F4","#EA4335","#D99A00","#34A853","#FF6D01","#2AA5B0","#7B61FF","#F538A0","#00A88F","#E8590C","#9C5BC9","#1E88E5","#D81B60","#8E24AA","#00897B","#F4511E"];
+function hc(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return AVC[Math.abs(h)%AVC.length]}
+function ini(n){return (n||"?").trim().split(/\s+/).map(w=>w[0]).join("").toUpperCase().slice(0,2)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function av(n,size){const f=Math.round(size*.38);return`<span class="av" style="width:${size}px;height:${size}px;font-size:${f}px;background:${hc(n)}">${esc(ini(n))}</span>`}
+const code=c=>`${c.subj} ${c.cat}`;
+
+function parseTime(s){const m=s.match(/(\d+):?(\d*)\s*([ap]m)/i);if(!m)return 0;let h=+m[1],mi=m[2]?+m[2]:0;const ap=m[3].toLowerCase();if(ap==="pm"&&h!==12)h+=12;if(ap==="am"&&h===12)h=0;return h*60+mi}
+const DAYMAP={M:["Mon"],W:["Wed"],Tu:["Tue"],Th:["Thu"],MW:["Mon","Wed"],TTh:["Tue","Thu"]};
+function parsePattern(p){const tp=p.match(/\d+:?\d*\s*[ap]m\s*-\s*\d+:?\d*\s*[ap]m/i);if(!tp)return[];const[a,b]=tp[0].split("-");const start=parseTime(a),end=parseTime(b);const days=DAYMAP[p.replace(tp[0],"").trim()];return days?days.map(day=>({day,start,end})):[]}
+function fmt(m){const h=Math.floor(m/60),mi=m%60;return`${h>12?h-12:h||12}:${String(mi).padStart(2,"0")}${h>=12?"pm":"am"}`}
+COURSES.forEach(c=>{c.slots=(c.session==="ace"||c.session==="dc")?[]:parsePattern(c.pattern)});
+const BYID=Object.fromEntries(COURSES.map(c=>[c.id,c]));
+const DAYS=["Mon","Tue","Wed","Thu"],SH=8,EH=22;
+
+// ─── State ───
+let me={id:"",name:""},selected=new Set(),users={},friends=new Set(),loaded=false;
+let view="list",search="",fSubj="ALL",fWhen="ALL",onlyFriends=false,sortBy="group",expanded=null,personId=null,overlayId="",peopleQ="";
+
+function load(){try{const d=JSON.parse(localStorage.getItem(LS)||"null");if(d){me={id:d.id||"",name:d.name||""};selected=new Set(d.sel||[]);friends=new Set(d.fr||[]);view=d.view||"list"}}catch(e){}}
+function save(){try{localStorage.setItem(LS,JSON.stringify({id:me.id,name:me.name,sel:[...selected],fr:[...friends],view}))}catch(e){}}
+
+let pushT=null;
+function push(){if(!me.id)return;clearTimeout(pushT);pushT=setTimeout(()=>{db.ref(ROOT+"/users/"+me.id).set({name:me.name,courses:[...selected],updated:Date.now()}).catch(e=>{console.error(e);toast("Couldn't save — check your connection")})},350)}
+
+function compatible(a,b){return !((a==="q1"&&b==="q2")||(a==="q2"&&b==="q1"))}
+function conflictsFor(ids){const sel=[...ids].map(i=>BYID[i]).filter(Boolean),out=[];for(let i=0;i<sel.length;i++)for(let j=i+1;j<sel.length;j++){if(!compatible(sel[i].session,sel[j].session))continue;if(sel[i].slots.some(a=>sel[j].slots.some(b=>a.day===b.day&&a.start<b.end&&b.start<a.end)))out.push([sel[i],sel[j]])}return out}
+
+function others(){return Object.entries(users).filter(([id,u])=>id!==me.id&&u&&u.name)}
+function matesMap(){const m={};COURSES.forEach(c=>m[c.id]=[]);others().forEach(([id,u])=>(u.courses||[]).forEach(cid=>{if(m[cid])m[cid].push({id,name:u.name})}));Object.values(m).forEach(a=>a.sort((x,y)=>(friends.has(y.id)-friends.has(x.id))||x.name.localeCompare(y.name)));return m}
+
+// ─── Actions ───
+function newId(n){return n.toLowerCase().replace(/[^a-z0-9]/g,"_").slice(0,30)+"_"+Math.random().toString(36).slice(2,7)}
+function join(){const v=document.getElementById("nm").value.trim().slice(0,60);if(!v)return;me={id:newId(v),name:v};save();push();render();toast("You're in — pick your courses 🎉")}
+function claim(id){const u=users[id];if(!u)return;me={id,name:u.name};selected=new Set(u.courses||[]);save();render();toast("Welcome back, "+u.name.split(" ")[0])}
+function signOut(){if(!confirmLeave())return;me={id:"",name:""};selected=new Set();save();render()}
+function confirmLeave(){return true}
+function toggle(id){selected.has(id)?selected.delete(id):selected.add(id);save();push();render()}
+function star(id,ev){ev&&ev.stopPropagation();friends.has(id)?friends.delete(id):friends.add(id);save();render()}
+function go(v){view=v;save();render();window.scrollTo({top:0})}
+function openPerson(id){personId=id;view="people";save();render();window.scrollTo({top:0})}
+function compare(id){overlayId=id;go("week")}
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2400)}
+function link(){return location.origin+location.pathname+(roomId===DEFAULT_ROOM?"":"#"+roomId)}
+function copyLink(){const u=link();(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("Link copied")).catch(()=>{const t=document.createElement("textarea");t.value=u;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();toast("Link copied")})}
+function wa(){const t=`Spring 2027 course planning 📚 Add your classes and see what everyone's taking:\n\n${link()}`;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}
+
+// keep focus in inputs across re-renders
+function rerenderKeep(id){const el=document.getElementById(id);const pos=el?el.selectionStart:null;render();const n=document.getElementById(id);if(n){n.focus();if(pos!=null)n.setSelectionRange(pos,pos)}}
+
+// ─── Render ───
+function render(){
+  const app=document.getElementById("app");
+  if(!loaded){return}
+  if(!me.id){app.innerHTML=renderOnboard();setTimeout(()=>{const i=document.getElementById("nm");i&&i.focus()},0);return}
+  const conf=conflictsFor(selected),confIds=new Set(conf.flat().map(c=>c.id));
+  const sel=COURSES.filter(c=>selected.has(c.id));
+  const mm=matesMap();
+  const total=Object.keys(users).length;
+  let mins=0;sel.forEach(c=>c.slots.forEach(s=>mins+=s.end-s.start));
+  const overlapPeople=others().filter(([id,u])=>(u.courses||[]).some(x=>selected.has(x))).length;
+  let h=`<div class="hdr"><div class="wrap">
+    <div class="logo">Spring 2027<small>Goizueta FTMBA</small></div>
+    <div class="me"><div class="live"><i></i>${total} in</div>${av(me.name,30)}<span class="me-name">${esc(me.name)}</span><button class="ghost" onclick="signOut()">Switch</button></div>
+  </div></div>
+  <div class="bar"><div class="wrap">
+    <div class="stat"><b>${selected.size}</b><span>courses</span></div>
+    <div class="stat"><b>${(mins/60).toFixed(1)}</b><span>hrs/wk</span></div>
+    <div class="stat"><b style="color:${conf.length?"var(--danger)":"var(--accent)"}">${conf.length}</b><span>conflicts</span></div>
+    <div class="stat"><b>${overlapPeople}</b><span>classmates overlap</span></div>
+    <div class="tabs">
+      <button class="tab ${view==="list"?"on":""}" onclick="go('list')">Courses</button>
+      <button class="tab ${view==="week"?"on":""}" onclick="go('week')">My week</button>
+      <button class="tab ${view==="people"?"on":""}" onclick="go('people')">Classmates</button>
+    </div>
+  </div></div><main><div class="wrap">`;
+  conf.forEach(([a,b])=>{h+=`<div class="alert"><span>⚠️</span><span class="sp"><b>${esc(code(a))}</b> overlaps <b>${esc(code(b))}</b></span><button class="btn-red" onclick="toggle('${a.id}')">Drop ${esc(code(a))}</button><button class="btn-red" onclick="toggle('${b.id}')">Drop ${esc(code(b))}</button></div>`});
+  if(view==="list")h+=renderList(sel,confIds,mm);
+  else if(view==="week")h+=renderWeek(sel,confIds,mm);
+  else h+=renderPeople(mm);
+  h+=`</div></main><div class="foot">Course data from SP27 FTMBA Schedule (10/28/26). Always confirm in OPUS.</div>`;
+  app.innerHTML=h;
+}
+
+function renderOnboard(){
+  const list=Object.entries(users).filter(([,u])=>u&&u.name).sort((a,b)=>a[1].name.localeCompare(b[1].name));
+  return`<div class="ob"><div class="ob-box">
+    <div class="em">🌱</div>
+    <h1>Spring 2027 Schedule</h1>
+    <p>Goizueta Business School<br>Add your classes, see your week, and see what your friends are taking — live.</p>
+    <div class="row"><input id="nm" placeholder="Your full name" maxlength="60" onkeydown="if(event.key==='Enter')join()"><button class="go" onclick="join()">Join</button></div>
+    <div class="info">${list.length?`🟢 ${list.length} ${list.length===1?"classmate has":"classmates have"} joined`:"You're the first one here — share the link after you join!"}</div>
+    ${list.length?`<div class="claim"><div class="lbl">Already joined on another device? Tap your name</div><div class="namechips">${list.map(([id,u])=>`<span class="nchip" onclick="claim('${id}')">${av(u.name,22)}${esc(u.name)}</span>`).join("")}</div></div>`:""}
+  </div></div>`;
+}
+
+function rowHTML(c,confIds,mm){
+  const s=selected.has(c.id),k=col(c),mates=mm[c.id]||[],fr=mates.filter(m=>friends.has(m.id));
+  let r=`<div class="cr${s?" sel":""}" style="--bc:${k.b};--bbg:${k.bg}" onclick="toggle('${c.id}')">
+    <div class="cbox">${s?"✓":""}</div>
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="chip" style="background:${k.bg};color:${k.t}">${esc(code(c))}</span><span class="ttl">${esc(c.title)}</span>
+      ${SESS[c.session]&&c.group!=="ACE"&&c.group!=="DC"?`<span class="tag ses">${SESS[c.session]}</span>`:""}
+      ${c.note?`<span class="tag note">${esc(c.note)}</span>`:""}
+      ${confIds.has(c.id)?`<span class="tag conf">CONFLICT</span>`:""}</div>
+      <div class="meta">${esc(c.prof)}<span class="d">·</span>${esc(c.pattern)}<span class="d">·</span>${esc(c.loc)}${c.sect?`<span class="d">·</span>Sec ${esc(c.sect)}`:""}</div>
+    </div>
+    ${mates.length?`<div class="mates${fr.length?" has-fr":""}" title="See who's taking this" onclick="event.stopPropagation();expanded=expanded==='${c.id}'?null:'${c.id}';render()">${mates.slice(0,3).map(m=>`<span class="av mini" style="background:${hc(m.name)}">${esc(ini(m.name)[0])}</span>`).join("")}<span class="n">${mates.length}${fr.length?` · ★${fr.length}`:""}</span></div>`:""}
+  </div>`;
+  if(expanded===c.id&&mates.length)r+=`<div class="exp"><div class="lbl">Also taking this</div><div class="namechips">${mates.map(m=>`<span class="nchip${friends.has(m.id)?" fr":""}" onclick="openPerson('${m.id}')">${av(m.name,22)}${esc(m.name)}${friends.has(m.id)?" ★":""}</span>`).join("")}</div></div>`;
+  return r;
+}
+
+function renderList(sel,confIds,mm){
+  const subjs=[...new Set(COURSES.map(c=>c.subj))].sort();
+  const q=search.toLowerCase();
+  let f=COURSES.filter(c=>{
+    if(fSubj!=="ALL"&&c.subj!==fSubj)return false;
+    if(q&&!`${c.title} ${c.subj} ${c.cat} ${c.prof} ${c.id}`.toLowerCase().includes(q)&&!(mm[c.id]||[]).some(m=>m.name.toLowerCase().includes(q)))return false;
+    if(fWhen==="DAY"&&(!c.slots.length||c.slots.some(s=>s.start>=18*60)))return false;
+    if(fWhen==="EVE"&&(!c.slots.length||c.slots.every(s=>s.start<18*60)))return false;
+    if(fWhen==="MW"&&!c.slots.some(s=>s.day==="Mon"||s.day==="Wed"))return false;
+    if(fWhen==="TTH"&&!c.slots.some(s=>s.day==="Tue"||s.day==="Thu"))return false;
+    if(fWhen==="SHORT"&&c.slots.length)return false;
+    if(onlyFriends&&!(mm[c.id]||[]).some(m=>friends.has(m.id)))return false;
+    return true;
+  });
+  const order={CORE:0,ELECTIVE:1,ACE:2,DC:3};
+  if(sortBy==="popular")f.sort((a,b)=>(mm[b.id].length-mm[a.id].length)||a.title.localeCompare(b.title));
+  else if(sortBy==="time")f.sort((a,b)=>((a.slots[0]?.start??9999)-(b.slots[0]?.start??9999))||a.subj.localeCompare(b.subj));
+  else f.sort((a,b)=>(order[a.group]-order[b.group])||a.subj.localeCompare(b.subj)||a.cat.localeCompare(b.cat,undefined,{numeric:true})||a.sect.localeCompare(b.sect));
+  let h=`<div class="grid"><div>
+    <div class="filters">
+      <input id="q" placeholder="Search course, professor, or classmate…" value="${esc(search)}" oninput="search=this.value;rerenderKeep('q')">
+      <select onchange="fSubj=this.value;render()"><option value="ALL">All subjects</option>${subjs.map(s=>`<option${fSubj===s?" selected":""}>${s}</option>`).join("")}</select>
+      <select onchange="fWhen=this.value;render()">${[["ALL","Any time"],["DAY","Daytime"],["EVE","Evening"],["MW","Mon/Wed"],["TTH","Tue/Thu"],["SHORT","ACE & Wash. Campus"]].map(([v,l])=>`<option value="${v}"${fWhen===v?" selected":""}>${l}</option>`).join("")}</select>
+    </div>
+    <div class="sortbar"><span class="lbl">Sort</span>${[["group","Section"],["time","Time"],["popular","Most popular"]].map(([k,l])=>`<button class="pill ${sortBy===k?"on":""}" onclick="sortBy='${k}';render()">${l}</button>`).join("")}
+      <span style="flex:1"></span><button class="pill fr ${onlyFriends?"on":""}" onclick="onlyFriends=!onlyFriends;render()">★ Friends' picks</button></div>
+    <div class="card">`;
+  if(!f.length)h+=`<div class="empty">${onlyFriends&&!friends.size?"Star friends on the Classmates tab to filter by their picks.":"No courses match these filters."}</div>`;
+  let last=null;
+  f.forEach(c=>{if(sortBy==="group"&&c.group!==last){h+=`<div class="sec-h">${GROUP_LABEL[c.group]}</div>`;last=c.group}h+=rowHTML(c,confIds,mm)});
+  h+=`</div></div><div><div class="side"><h3>My schedule (${sel.length})</h3>`;
+  if(!sel.length)h+=`<div class="empty">Tap courses to add them.<br>Your picks save automatically and your classmates see them live.</div>`;
+  sel.forEach(c=>{const k=col(c),n=(mm[c.id]||[]).length;h+=`<div class="sc" style="background:${k.bg};border-left:3px solid ${k.b}"><div style="flex:1;min-width:0"><div class="code" style="color:${k.t}">${esc(code(c))} · ${esc(c.title)}</div><div class="t">${esc(c.pattern)}${SESS[c.session]&&c.group!=="ACE"&&c.group!=="DC"?" · "+SESS[c.session]:""}${n?` · ${n} classmate${n>1?"s":""}`:""}</div></div>${confIds.has(c.id)?"⚠️":""}<button class="x" onclick="toggle('${c.id}')" title="Remove">×</button></div>`});
+  if(sel.length)h+=`<button class="cta" onclick="go('week')">See my week →</button><button class="cta alt" onclick="go('people')">Who's in my classes?</button>`;
+  h+=`</div></div></div>`;
+  return h;
+}
+
+function layoutDay(items){ // assign lanes to overlapping blocks
+  items.sort((a,b)=>a.s.start-b.s.start||a.s.end-b.s.end);
+  const groups=[];let cur=[],end=-1;
+  items.forEach(it=>{if(it.s.start>=end&&cur.length){groups.push(cur);cur=[]}cur.push(it);end=Math.max(end,it.s.end)});
+  if(cur.length)groups.push(cur);
+  groups.forEach(g=>{const lanes=[];g.forEach(it=>{let l=lanes.findIndex(e=>e<=it.s.start);if(l<0){l=lanes.length;lanes.push(0)}lanes[l]=it.s.end;it.lane=l});g.forEach(it=>it.lanes=lanes.length)});
+  return items;
+}
+
+function calendarHTML(mine,confIds,mm,ghost){
+  const total=(EH-SH)*60,H=total*0.75;
+  let lbl="",lines="";
+  for(let i=0;i<EH-SH;i++){const hr=SH+i,top=i/(EH-SH)*100;lbl+=`<div class="tl" style="top:${top}%">${hr>12?hr-12:hr}${hr>=12?"p":"a"}</div>`;lines+=`<div class="hl" style="top:${top}%"></div>`}
+  const cols=DAYS.map(day=>{
+    const items=[];
+    mine.forEach(c=>c.slots.filter(s=>s.day===day).forEach(s=>items.push({c,s,g:false})));
+    (ghost||[]).forEach(c=>c.slots.filter(s=>s.day===day).forEach(s=>items.push({c,s,g:true})));
+    layoutDay(items);
+    const blocks=items.map(({c,s,g,lane,lanes})=>{const k=col(c),top=(s.start-SH*60)/total*100,ht=(s.end-s.start)/total*100,w=100/lanes;
+      const n=(mm[c.id]||[]).length;
+      return`<div class="blk${!g&&confIds.has(c.id)?" conf":""}${g?" ghost":""}" style="top:${top}%;height:${ht}%;left:calc(${lane*w}% + 3px);width:calc(${w}% - 6px);background:${k.b};--gc:${k.b}" title="${esc(code(c)+" — "+c.title+" ("+c.pattern+")")}">
+        <div class="c">${esc(code(c))}${SESS[c.session]?` <span style="font-weight:500;opacity:.8">${SESS[c.session]}</span>`:""}</div><div class="tt">${esc(c.title)}</div><div class="s">${fmt(s.start)}–${fmt(s.end)} · ${esc(c.loc)}</div>${!g&&n?`<div class="s">👥 ${n}</div>`:""}</div>`}).join("");
+    return`<div class="dc"><div class="dh">${day.toUpperCase()}</div><div class="body" style="height:${H}px">${lines}${blocks}</div></div>`}).join("");
+  const used=[...new Set([...mine,...(ghost||[])].map(c=>c.subj))];
+  return`<div class="cal"><div class="cg"><div><div class="dh" style="font-size:10px;color:var(--faint)">TIME</div><div class="body" style="height:${H}px">${lbl}</div></div>${cols}</div>
+  <div class="legend">${used.map(s=>`<span><i style="background:${(COL[s]||COL.BUS).b}"></i>${s}</span>`).join("")}${ghost?`<span><i style="border:2px dashed #888;background:#fff"></i>Overlay</span>`:""}</div></div>`;
+}
+
+function renderWeek(sel,confIds,mm){
+  const ppl=others().sort((a,b)=>(friends.has(b[0])-friends.has(a[0]))||a[1].name.localeCompare(b[1].name));
+  const ou=overlayId&&users[overlayId];
+  const ghost=ou?(ou.courses||[]).map(i=>BYID[i]).filter(c=>c&&!selected.has(c.id)):null;
+  let h=`<div class="cal-tools"><b style="font-size:14px">My week</b><span style="flex:1"></span><span style="color:var(--mute)">Compare with</span>
+    <select onchange="overlayId=this.value;render()"><option value="">— nobody —</option>${ppl.map(([id,u])=>`<option value="${id}"${overlayId===id?" selected":""}>${friends.has(id)?"★ ":""}${esc(u.name)}</option>`).join("")}</select></div>`;
+  if(ou){const shared=(ou.courses||[]).filter(i=>selected.has(i)).length;h+=`<div style="font-size:12px;color:var(--mute);margin-bottom:10px">Solid = your classes · dashed = ${esc(ou.name)}'s other classes · you share <b style="color:var(--accent)">${shared}</b></div>`}
+  if(!sel.length&&!ghost)return h+`<div class="card"><div class="empty" style="padding:48px">No courses yet.<br><button class="cta" style="width:auto;padding:9px 18px" onclick="go('list')">Pick courses</button></div></div>`;
+  h+=calendarHTML(sel,confIds,mm,ghost);
+  const off=sel.filter(c=>!c.slots.length);
+  if(off.length)h+=`<div class="panel offgrid"><h3>Outside the weekly grid</h3><p class="sub">January ACE & Washington Campus</p>${off.map(c=>{const k=col(c);return`<div class="sc" style="background:${k.bg};border-left:3px solid ${k.b}"><div style="flex:1"><div class="code" style="color:${k.t}">${esc(code(c))} · ${esc(c.title)}</div><div class="t">${esc(c.pattern)} · ${esc(c.loc)}</div></div><button class="x" onclick="toggle('${c.id}')">×</button></div>`}).join("")}</div>`;
+  return h;
+}
+
+function renderPeople(mm){
+  const ppl=others().map(([id,u])=>({id,name:u.name,courses:(u.courses||[]).filter(i=>BYID[i]),updated:u.updated||0})).map(p=>({...p,shared:p.courses.filter(i=>selected.has(i))}));
+  const q=peopleQ.toLowerCase();
+  const list=ppl.filter(p=>!q||p.name.toLowerCase().includes(q)).sort((a,b)=>(friends.has(b.id)-friends.has(a.id))||(b.shared.length-a.shared.length)||a.name.localeCompare(b.name));
+  let h=`<div class="share"><div class="txt"><h3>🔗 Invite your class</h3><p>Everyone who opens this link joins the same live board.</p><div class="url">${esc(link())}</div></div>
+    <div class="acts"><button class="b-w" onclick="copyLink()">Copy link</button><button class="b-wa" onclick="wa()">WhatsApp</button></div></div>
+  <div class="two"><div>`;
+  // person detail
+  const p=personId&&ppl.find(x=>x.id===personId);
+  if(p){
+    const cs=p.courses.map(i=>BYID[i]).sort((a,b)=>(a.slots[0]?.start??9999)-(b.slots[0]?.start??9999));
+    h+=`<div class="panel" style="margin-bottom:16px"><div class="prof-h">${av(p.name,44)}<div style="flex:1"><div class="nm">${esc(p.name)}</div><div class="mt">${cs.length} course${cs.length===1?"":"s"} · ${p.shared.length} with you</div></div>
+      <button class="star ${friends.has(p.id)?"on":""}" title="Star as friend" onclick="star('${p.id}',event)">★</button><button class="x" onclick="personId=null;render()" title="Close">×</button></div>
+      ${cs.length?cs.map(c=>{const k=col(c),mine=selected.has(c.id);return`<div class="pc"><span class="chip" style="background:${k.bg};color:${k.t}">${esc(code(c))}</span><div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:600">${esc(c.title)}</div><div class="meta" style="margin-top:1px">${esc(c.pattern)} · ${esc(c.prof)}</div></div><button class="add ${mine?"on":""}" style="${mine?`background:${k.b}`:""}" onclick="toggle('${c.id}')">${mine?"✓ Taking":"+ Add"}</button></div>`}).join(""):`<div class="empty">No courses picked yet.</div>`}
+      ${cs.length?`<button class="cta" onclick="compare('${p.id}')">Compare our weeks →</button>`:""}</div>`;
+  }
+  h+=`<div class="panel"><h3>👥 Classmates (${ppl.length})</h3><p class="sub">★ star your friends to highlight their picks everywhere</p>
+    <input id="pq" placeholder="Find a classmate…" value="${esc(peopleQ)}" oninput="peopleQ=this.value;rerenderKeep('pq')">`;
+  if(!ppl.length)h+=`<div class="empty">Nobody else yet — share the link above.</div>`;
+  list.forEach(u=>{h+=`<div class="pr${personId===u.id?" on":""}" onclick="openPerson('${u.id}')"><button class="star ${friends.has(u.id)?"on":""}" onclick="star('${u.id}',event)">★</button>${av(u.name,34)}<div style="flex:1;min-width:0"><div class="nm">${esc(u.name)}</div><div class="mt">${u.courses.length} course${u.courses.length===1?"":"s"} planned</div></div><div class="shared"><b>${u.shared.length}</b><div>shared</div></div></div>`});
+  h+=`</div></div><div>`;
+  // popular
+  const pop=COURSES.map(c=>({c,n:(mm[c.id]||[]).length+(selected.has(c.id)?1:0)})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,10);
+  h+=`<div class="panel"><h3>🔥 Most popular</h3><p class="sub">Courses with the most classmates</p>`;
+  if(!pop.length)h+=`<div class="empty">No picks yet — be the first!</div>`;
+  pop.forEach(({c,n},i)=>{const k=col(c),mine=selected.has(c.id),ms=mm[c.id]||[];h+=`<div class="pop"><div class="rank" style="background:${k.bg};color:${k.t}">${i+1}</div><div style="flex:1;min-width:0"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="chip" style="background:${k.bg};color:${k.t}">${esc(code(c))}</span><span style="font-size:12.5px;font-weight:600">${esc(c.title)}</span></div><div class="meta">${esc(c.pattern)} · <b>${n}</b> taking${ms.some(m=>friends.has(m.id))?` · ★ ${ms.filter(m=>friends.has(m.id)).map(m=>esc(m.name.split(" ")[0])).join(", ")}`:""}</div></div><button class="add ${mine?"on":""}" style="${mine?`background:${k.b}`:""}" onclick="toggle('${c.id}')">${mine?"✓ Added":"+ Add"}</button></div>`});
+  h+=`</div></div></div>`;
+  return h;
+}
+
+// ─── Init ───
+load();
+db.ref(ROOT+"/users").on("value",snap=>{
+  users=snap.val()||{};
+  if(me.id&&users[me.id]&&!loaded){ // trust server copy on first load if local is empty
+    if(!selected.size&&users[me.id].courses)selected=new Set(users[me.id].courses);
+  }
+  if(me.id&&!users[me.id]&&loaded===false)push(); // re-register if missing
+  loaded=true;
+  const a=document.activeElement;const id=a&&a.id;
+  render();
+  if(id){const n=document.getElementById(id);if(n&&n.tagName==="INPUT"){n.focus();try{n.setSelectionRange(n.value.length,n.value.length)}catch(e){}}}
+},err=>{console.error(err);document.getElementById("app").innerHTML=`<div class="loading">⚠️ Couldn't connect to the database. Try refreshing.</div>`});
+</script>
+</body>
+</html>
